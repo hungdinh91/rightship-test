@@ -18,6 +18,15 @@ namespace LegacyOrderService
                 Console.WriteLine("Enter customer name:");
                 string name = Console.ReadLine();
 
+                while(string.IsNullOrWhiteSpace(name))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Customer name is required.");
+                    Console.WriteLine("Please input customer name again.");
+                    Console.WriteLine("Enter customer name:");
+                    name = Console.ReadLine();
+                }
+
                 Console.WriteLine();
                 Console.WriteLine("Enter product name:");
                 string product = Console.ReadLine();
