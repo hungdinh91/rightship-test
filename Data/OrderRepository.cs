@@ -1,6 +1,5 @@
-using System;
-using Microsoft.Data.Sqlite;
 using LegacyOrderService.Models;
+using Microsoft.Data.Sqlite;
 
 namespace LegacyOrderService.Data
 {
@@ -11,26 +10,31 @@ namespace LegacyOrderService.Data
 
         public void Save(Order order)
         {
-            var connection = new SqliteConnection(_connectionString);
-            
-            connection.Open();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
 
-            var command = connection.CreateCommand();
-            command.CommandText = $@"
-                INSERT INTO Orders (CustomerName, ProductName, Quantity, Price)
-                VALUES ('{order.CustomerName}', '{order.ProductName}', {order.Quantity}, {order.Price})";
+                var command = connection.CreateCommand();
+                command.CommandText = $@"
+                    INSERT INTO Orders (CustomerName, ProductName, Quantity, Price)
+                    VALUES ('@CustomerName', '@ProductName', @Quantity, @Price)";
 
-            command.ExecuteNonQuery();            
+                command.Parameters.AddWithValue("@CustomerName", order.CustomerName);
+                command.Parameters.AddWithValue("@ProductName", order.ProductName);
+                command.Parameters.AddWithValue("@Quantity", order.Quantity);
+                command.Parameters.AddWithValue("@Price", order.Price);
+
+                command.ExecuteNonQuery();
+            }
         }
 
         public void SeedBadData()
         {
-            var connection = new SqliteConnection(_connectionString);            
+            var connection = new SqliteConnection(_connectionString);
             connection.Open();
             var cmd = connection.CreateCommand();
             cmd.CommandText = "INSERT INTO Orders (CustomerName, ProductName, Quantity, Price) VALUES ('John', 'Widget', 9999, 9.99)";
             cmd.ExecuteNonQuery();
-            
         }
     }
 }
