@@ -18,6 +18,7 @@ namespace LegacyOrderService
                 Console.WriteLine("Enter customer name:");
                 string name = Console.ReadLine();
 
+                Console.WriteLine();
                 Console.WriteLine("Enter product name:");
                 string product = Console.ReadLine();
 
@@ -26,22 +27,36 @@ namespace LegacyOrderService
                 // Input product name to order
                 while (string.IsNullOrWhiteSpace(product) || !productRepo.IsProductAvailable(product))
                 {
+                    Console.WriteLine();
                     Console.WriteLine($"Product name is required and have one of these values: {productNamesText}.");
+                    Console.WriteLine("Please input product again.");
                     Console.WriteLine("Enter product name:");
                     product = Console.ReadLine();
                 }
 
                 double price = productRepo.GetPrice(product);
 
+                Console.WriteLine();
                 Console.WriteLine("Enter quantity:");
-                int qty = Convert.ToInt32(Console.ReadLine());
+                var inputQuantityString = Console.ReadLine();
+                int quantity = 0;
 
+                while (string.IsNullOrWhiteSpace(inputQuantityString) || !int.TryParse(inputQuantityString, out quantity))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Quantity is required and must be a positive integer.");
+                    Console.WriteLine("Please input quantity again.");
+                    Console.WriteLine("Enter quantity:");
+                    inputQuantityString = Console.ReadLine();
+                }
+
+                Console.WriteLine();
                 Console.WriteLine("Processing order...");
 
                 Order order = new Order();
                 order.CustomerName = name;
                 order.ProductName = product;
-                order.Quantity = qty;
+                order.Quantity = quantity;
                 order.Price = 10.0;
 
                 double total = order.Quantity * order.Price;
