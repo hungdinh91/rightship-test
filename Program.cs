@@ -18,7 +18,7 @@ namespace LegacyOrderService
                 Console.WriteLine("Enter customer name:");
                 string name = Console.ReadLine();
 
-                while(string.IsNullOrWhiteSpace(name))
+                while (string.IsNullOrWhiteSpace(name))
                 {
                     Console.WriteLine();
                     Console.WriteLine("Customer name is required.");
@@ -50,7 +50,7 @@ namespace LegacyOrderService
                 var inputQuantityString = Console.ReadLine();
                 int quantity = 0;
 
-                while (string.IsNullOrWhiteSpace(inputQuantityString) || !int.TryParse(inputQuantityString, out quantity))
+                while (string.IsNullOrWhiteSpace(inputQuantityString) || !int.TryParse(inputQuantityString, out quantity) || quantity <= 0)
                 {
                     Console.WriteLine();
                     Console.WriteLine("Quantity is required and must be a positive integer.");
