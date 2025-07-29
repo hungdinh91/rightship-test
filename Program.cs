@@ -66,15 +66,16 @@ namespace LegacyOrderService
                 order.CustomerName = name;
                 order.ProductName = product;
                 order.Quantity = quantity;
-                order.Price = 10.0;
+                order.Price = price;
 
                 double total = order.Quantity * order.Price;
 
                 Console.WriteLine("Order complete!");
                 Console.WriteLine("Customer: " + order.CustomerName);
                 Console.WriteLine("Product: " + order.ProductName);
+                Console.WriteLine("Price: $" + order.Price);
                 Console.WriteLine("Quantity: " + order.Quantity);
-                Console.WriteLine("Total: $" + price);
+                Console.WriteLine("Total: $" + total);
 
                 Console.WriteLine("Saving order to database...");
                 var repo = new OrderRepository();
