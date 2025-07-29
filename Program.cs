@@ -8,8 +8,41 @@ namespace LegacyOrderService
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to Order Processor!");
+            bool isStopped = false;
+            while (!isStopped)
+            {
+                var canOrder = OrderProducts();
+                if (!canOrder) isStopped = true;
+                else
+                {
+                    var keyChar = ' ';
+                    while (keyChar != 'Y' && keyChar != 'N' && keyChar != 'y' && keyChar != 'n')
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Do you want to continue (Y/N): ");
+                        var key = Console.ReadKey();
+                        keyChar = key.KeyChar;
+                    }
 
+                    if (keyChar == 'N' || keyChar == 'n')
+                    {
+                        isStopped = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("-----------------------------------");
+                        Console.WriteLine();
+                    }
+                }
+            }
+
+            Console.WriteLine("Done.");
+        }
+
+        static bool OrderProducts()
+        {
+            Console.WriteLine("Welcome to Order Processor!");
             var productRepo = new ProductRepository();
             var productNames = productRepo.GetProductNames().OrderBy(x => x).ToArray();
 
@@ -82,13 +115,14 @@ namespace LegacyOrderService
                 Console.WriteLine("Saving order to database...");
                 var repo = new OrderRepository();
                 repo.Save(order);
+
+                return true;
             }
             else
             {
                 Console.WriteLine("No products are currently available. Please check back again soon.");
+                return false;
             }
-
-            Console.WriteLine("Done.");
         }
     }
 }
