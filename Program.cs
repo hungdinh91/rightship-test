@@ -15,7 +15,8 @@ namespace LegacyOrderService
 
             if (productNames.Any())
             {
-                Console.WriteLine("Enter customer name:");
+                // Input customer name
+                Console.WriteLine("Enter customer name (required):");
                 string name = Console.ReadLine();
 
                 while (string.IsNullOrWhiteSpace(name))
@@ -27,17 +28,16 @@ namespace LegacyOrderService
                     name = Console.ReadLine();
                 }
 
+                // Input product name to order
+                var productNamesText = string.Join(", ", productNames);
                 Console.WriteLine();
-                Console.WriteLine("Enter product name:");
+                Console.WriteLine($"Enter product name (required and need to be one of these values [{productNamesText}]):");
                 string product = Console.ReadLine();
 
-                var productNamesText = string.Join(", ", productNames);
-
-                // Input product name to order
                 while (string.IsNullOrWhiteSpace(product) || !productRepo.IsProductAvailable(product))
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"Product name is required and have one of these values: {productNamesText}.");
+                    Console.WriteLine($"Product name is required and need to be one of these values: {productNamesText}.");
                     Console.WriteLine("Please input product again.");
                     Console.WriteLine("Enter product name:");
                     product = Console.ReadLine();
@@ -45,8 +45,9 @@ namespace LegacyOrderService
 
                 double price = productRepo.GetPrice(product);
 
+                // Input quantity want to order
                 Console.WriteLine();
-                Console.WriteLine("Enter quantity:");
+                Console.WriteLine("Enter quantity (required and need to be a positive integer):");
                 var inputQuantityString = Console.ReadLine();
                 int quantity = 0;
 
@@ -59,6 +60,7 @@ namespace LegacyOrderService
                     inputQuantityString = Console.ReadLine();
                 }
 
+                // Process order
                 Console.WriteLine();
                 Console.WriteLine("Processing order...");
 
