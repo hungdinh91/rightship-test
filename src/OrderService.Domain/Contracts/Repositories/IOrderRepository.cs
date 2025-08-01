@@ -2,7 +2,6 @@
 
 namespace OrderService.Domain.Contracts.Repositories;
 
-public interface IOrderRepository
+public interface IOrderRepository : IRepository<Order>
 {
-    void Create(Order order);
 }

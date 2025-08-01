@@ -1,6 +1,8 @@
-
 using Microsoft.EntityFrameworkCore;
+using OrderService.API.Middlewares;
+using OrderService.Domain.Contracts.Repositories;
 using OrderService.Infrastructure.DbContexts;
+using OrderService.Infrastructure.Repositories;
 
 namespace OrderService.API
 {
@@ -15,6 +17,11 @@ namespace OrderService.API
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb"));
             });
+
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -31,7 +38,7 @@ namespace OrderService.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseMiddleware<GlobalExceptionHandling>();
             app.UseAuthorization();
 
             // Migrate the database

@@ -1,14 +1,10 @@
 ﻿using OrderService.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrderService.Domain.Contracts.Repositories;
 
-public interface IProductRepository
+public interface IProductRepository : IRepository<Product>
 {
-    List<string> GetProductNames();
-    Product? GetProductByName(string? productName);
+    Task<List<string>> GetProductNamesAsync();
+    Task<Product?> GetProductByNameAsync(string? productName);
+    Task<List<Product>> GetByManyIdsAsync(IEnumerable<Guid> ids);
 }
