@@ -17,11 +17,6 @@ namespace OrderService.Infrastructure.Repositories
             return await _context.Products.Where(x => ids.Contains(x.Id)).ToListAsync();   
         }
 
-        public async Task<Product?> GetProductByNameAsync(string? productName)
-        {
-            return await _context.Products.FirstOrDefaultAsync(p => p.ProductName == productName);
-        }
-
         public async Task<List<Product>> GetProductsAsync()
         {
             return await _context.Products.ToListAsync();

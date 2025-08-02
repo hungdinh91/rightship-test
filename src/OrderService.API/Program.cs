@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.API.Middlewares;
+using OrderService.Domain.Contracts;
 using OrderService.Domain.Contracts.Repositories;
+using OrderService.Infrastructure.Cache;
 using OrderService.Infrastructure.DbContexts;
 using OrderService.Infrastructure.Repositories;
+using StackExchange.Redis;
 
 namespace OrderService.API
 {
@@ -18,6 +21,10 @@ namespace OrderService.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb"));
             });
 
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? throw new NotSupportedException("Redis has not been configured");
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
+
+            builder.Services.AddSingleton<IRedisCache, RedisCache>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();

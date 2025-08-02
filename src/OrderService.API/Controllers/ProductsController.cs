@@ -21,17 +21,5 @@ namespace OrderService.API.Controllers
             var result = await _mediator.Send(new GetProductsQuery());
             return Ok(result.Value);
         }
-
-        [HttpGet("[action]/{name}")]
-        public async Task<IActionResult> GetProductByName(string name)
-        {
-            var result = await _mediator.Send(new GetProductByNameQuery(name));
-            if (result.Value == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result.Value);
-        }
     }
 }

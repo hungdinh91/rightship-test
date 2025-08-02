@@ -32,6 +32,7 @@ services:
 
   orderservice.api:
     image: ${DOCKER_REGISTRY-}orderserviceapi
+    container_name: "orderapi"
     build:
       context: .
       dockerfile: src/OrderService.API/Dockerfile
@@ -45,6 +46,7 @@ services:
         condition: service_healthy
     environment:
       - ConnectionStrings__OrderDb=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Password@123;Encrypt=false;
+      - ConnectionStrings__Redis=redis
 
 networks:
   backend:

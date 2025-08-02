@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OrderService.SharedKernel.Common;
 using OrderService.SharedKernel.Extensions;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace OrderService.ConsoleApp.Helpers;
 
@@ -303,7 +303,7 @@ public class HttpClientService : IHttpClientService
     {
         try
         {
-            return JsonSerializer.Deserialize<T>(jsonContent);
+            return JsonConvert.DeserializeObject<T>(jsonContent);
         }
         catch (Exception ex)
         {
