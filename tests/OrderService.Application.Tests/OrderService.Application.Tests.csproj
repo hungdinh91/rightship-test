@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\OrderService.Application\OrderService.Application.csproj" />
+    <ProjectReference Include="..\..\src\OrderService.Application\OrderService.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

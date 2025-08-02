@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C0A2DFDF
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{708C803A-AE77-434A-9FF6-5A00C79795F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Application.Tests", "OrderService.Application.Tests\OrderService.Application.Tests.csproj", "{7B830B9E-4CC7-4957-97BD-E5DFBF09570A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Application.Tests", "tests\OrderService.Application.Tests\OrderService.Application.Tests.csproj", "{7B830B9E-4CC7-4957-97BD-E5DFBF09570A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
