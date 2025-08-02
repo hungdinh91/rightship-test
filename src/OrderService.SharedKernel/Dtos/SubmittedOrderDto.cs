@@ -1,7 +1,7 @@
 ﻿using OrderService.SharedKernel.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderService.Application.Dtos;
+namespace OrderService.SharedKernel.Common;
 
 public class SubmittedOrderDto
 {

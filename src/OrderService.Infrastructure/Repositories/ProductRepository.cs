@@ -22,9 +22,9 @@ namespace OrderService.Infrastructure.Repositories
             return await _context.Products.FirstOrDefaultAsync(p => p.ProductName == productName);
         }
 
-        public async Task<List<string>> GetProductNamesAsync()
+        public async Task<List<Product>> GetProductsAsync()
         {
-            return await _context.Products.Select(x => x.ProductName).ToListAsync();
+            return await _context.Products.ToListAsync();
         }
     }
 }

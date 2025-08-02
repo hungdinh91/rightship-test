@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using OrderService.Application.Dtos;
 using OrderService.Domain.Contracts.Repositories;
 using OrderService.Domain.Models;
 using OrderService.SharedKernel.Common;
+using OrderService.SharedKernel.Dtos;
 
 namespace OrderService.Application.Commands;
 
-public class SubmitOrderCommand : IRequest<Result<Order>>
+public class SubmitOrderCommand : IRequest<Result<OrderDto>>
 {
     public SubmittedOrderDto SubmittedOrderDto { get; set; }
 
@@ -16,7 +16,7 @@ public class SubmitOrderCommand : IRequest<Result<Order>>
     }
 }
 
-public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Result<Order>>
+public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Result<OrderDto>>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
@@ -27,7 +27,7 @@ public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Res
         _productRepository = productRepository;
     }
 
-    public async Task<Result<Order>> Handle(SubmitOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Result<OrderDto>> Handle(SubmitOrderCommand request, CancellationToken cancellationToken)
     {
         var productIds = request.SubmittedOrderDto.OrderItems.Select(x => x.ProductId).Distinct().ToList();
         var products = await _productRepository.GetByManyIdsAsync(productIds);
@@ -36,7 +36,7 @@ public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Res
         if (notExistProductIds.Any())
         {
             var joinedIdString = string.Join(", ", notExistProductIds);
-            return Result.Fail<Order>(ErrorCode.ProductDoesNotExist, joinedIdString);
+            return Result.Fail<OrderDto>(ErrorCode.ProductDoesNotExist, joinedIdString);
         }
 
         var orderItems = request.SubmittedOrderDto.OrderItems.Select(x =>
@@ -49,6 +49,15 @@ public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Res
 
         await _orderRepository.AddAsync(order);
 
-        return Result.Ok(order);
+        var orderDto = new OrderDto
+        {
+            Id = order.Id,
+            CustomerName = order.CustomerName,
+            Total = order.Total,
+            OrderItems = order.OrderItems?.Select(x => new OrderItemDto { ProductId = x.ProductId, Price = x.Price, Quantity = x.Quantity })?.ToList()
+                ?? new List<OrderItemDto>(),
+        };
+
+        return Result.Ok(orderDto);
     }
 }

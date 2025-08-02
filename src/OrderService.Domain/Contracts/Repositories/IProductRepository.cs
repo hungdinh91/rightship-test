@@ -4,7 +4,7 @@ namespace OrderService.Domain.Contracts.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    Task<List<string>> GetProductNamesAsync();
+    Task<List<Product>> GetProductsAsync();
     Task<Product?> GetProductByNameAsync(string? productName);
     Task<List<Product>> GetByManyIdsAsync(IEnumerable<Guid> ids);
 }

@@ -3,6 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderService.ConsoleApp.Consoles;
 using OrderService.ConsoleApp.Settings;
+using Polly.Extensions.Http;
+using Polly;
+using OrderService.ConsoleApp.Helpers;
+using OrderService.ConsoleApp.Services;
 
 namespace OrderService.ConsoleApp
 {
@@ -23,13 +27,25 @@ namespace OrderService.ConsoleApp
                     services.AddSingleton<OrderConsole, OrderConsole>();
                     services.AddSingleton(appSettings);
 
-                    services.AddHttpClient($"{appSettings.OrderApiHost}Client", client =>
+                    services.AddHttpClient($"{appSettings.OrderApiHost}-Client", client =>
                     {
                         client.BaseAddress = new Uri(appSettings.OrderApiHost);
                         client.DefaultRequestHeaders.Add("Accept", "application/json");
                         // Add other headers if needed, like auth tokens
-                    });
+                    })
+                    .AddPolicyHandler(GetRetryPolicy());
+
+                    services.AddSingleton<IHttpClientService, HttpClientService>();
+                    services.AddSingleton<IProductService, ProductService>();
+                    services.AddSingleton<IOrderService, Services.OrderService>();
                 });
+        }
+
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError() // 5xx, 408
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
         static void Main(string[] args)

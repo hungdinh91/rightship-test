@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Commands;
-using OrderService.Application.Dtos;
+using OrderService.SharedKernel.Common;
 
 namespace OrderService.API.Controllers
 {
@@ -24,7 +24,7 @@ namespace OrderService.API.Controllers
             var result = await _mediator.Send(new SubmitOrderCommand(dto));
             if (result.IsSuccess)
             {
-                return Ok();
+                return Ok(result.Value);
             }
 
             return BadRequest(new

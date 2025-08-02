@@ -6,6 +6,8 @@ services:
     container_name: "redis"
     ports:
       - "6379:6379"
+    networks:
+      - backend
     restart: unless-stopped
 
   sqlserver:
@@ -16,7 +18,34 @@ services:
       - SA_PASSWORD=Password@123
     ports:
       - "1433:1433"
+    networks:
+      - backend
     volumes:
       - './mssql-data:/var/opt/mssql/data'
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-S", "localhost", "-U", "sa", "-P", "Password@123", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
+  orderservice.api:
+    image: ${DOCKER_REGISTRY-}orderserviceapi
+    build:
+      context: .
+      dockerfile: src/OrderService.API/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - backend
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__OrderDb=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Password@123;Encrypt=false;
+
+networks:
+  backend:
+    driver: bridge
