@@ -4,19 +4,10 @@ using OrderService.Infrastructure.DbContexts;
 
 namespace OrderService.Infrastructure.Repositories
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        private readonly OrderDbContext _dbContext;
-
-        public OrderRepository(OrderDbContext orderDbContext)
+        public OrderRepository(OrderDbContext context) : base(context)
         {
-            _dbContext = orderDbContext;
-        }
-
-        public void Create(Order order)
-        {
-            _dbContext.Orders.Add(order);
-            _dbContext.SaveChanges();
         }
     }
 }

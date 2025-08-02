@@ -1,17 +1,18 @@
-﻿using OrderService.Domain.Contracts.Repositories;
-using OrderService.Domain.Models;
+﻿using OrderService.ConsoleApp.Services;
+using OrderService.SharedKernel.Common;
+using OrderService.SharedKernel.Dtos;
 
 namespace OrderService.ConsoleApp.Consoles;
 
 public class OrderConsole
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IOrderRepository _orderRepository; 
+    private readonly IProductService _productService;
+    private readonly IOrderService _orderService;
 
-    public OrderConsole(IProductRepository productRepository, IOrderRepository orderRepository)
+    public OrderConsole(IProductService productService, IOrderService orderService)
     {
-        _productRepository = productRepository;
-        _orderRepository = orderRepository;
+        _productService = productService;
+        _orderService = orderService;
     }
 
     public void Start()
@@ -49,88 +50,98 @@ public class OrderConsole
     private bool OrderProducts()
     {
         Console.WriteLine("Welcome to Order Processor!");
-        var productNames = _productRepository.GetProductNames().OrderBy(x => x).ToArray();
-
-        if (productNames.Any())
+        var productsResult = _productService.GetProductsAsync().GetAwaiter().GetResult();
+        if (!productsResult.IsSuccess || productsResult.Value == null)
         {
-            // Input customer name
-            Console.WriteLine("Enter customer name (required):");
-            string? customerName = Console.ReadLine();
-
-            while (string.IsNullOrWhiteSpace(customerName))
-            {
-                Console.WriteLine();
-                Console.WriteLine("Customer name is required.");
-                Console.WriteLine("Please input customer name again.");
-                Console.WriteLine("Enter customer name:");
-                customerName = Console.ReadLine();
-            }
-
-            // Input product name to order
-            var allProductNamesText = string.Join(", ", productNames);
-            Console.WriteLine();
-            Console.WriteLine($"Enter product name (required and need to be one of these values [{allProductNamesText}]):");
-            string? productName = Console.ReadLine();
-            Product? product = productNames.Contains(productName) ? _productRepository.GetProductByName(productName) : null;
-
-            while (string.IsNullOrWhiteSpace(productName) || !productNames.Contains(productName) || product == null) 
-            {
-                Console.WriteLine();
-                Console.WriteLine($"Product name is required and need to be one of these values: {allProductNamesText}.");
-                Console.WriteLine("Please input product again.");
-                Console.WriteLine("Enter product name:");
-                productName = Console.ReadLine();
-                product = _productRepository.GetProductByName(productName);
-            }
-
-            // Input quantity want to order
-            Console.WriteLine();
-            Console.WriteLine("Enter quantity (required and need to be a positive integer):");
-            var inputQuantityString = Console.ReadLine();
-            int quantity = 0;
-
-            while (string.IsNullOrWhiteSpace(inputQuantityString) || !int.TryParse(inputQuantityString, out quantity) || quantity <= 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Quantity is required and must be a positive integer.");
-                Console.WriteLine("Please input quantity again.");
-                Console.WriteLine("Enter quantity:");
-                inputQuantityString = Console.ReadLine();
-            }
-
-            // Process order
-            Console.WriteLine();
-            Console.WriteLine("Processing order...");
-
-            Order order = new Order();
-            order.CustomerName = customerName;
-            
-            OrderItem orderItem = new OrderItem();
-            orderItem.OrderId = order.Id;
-            orderItem.ProductId = product.Id;
-            orderItem.Quantity = quantity;
-            orderItem.Price = product.Price;
-
-            order.OrderItems = new List<OrderItem>() { orderItem };
-
-            double total = orderItem.Quantity * orderItem.Price;
-
-            Console.WriteLine("Order complete!");
-            Console.WriteLine("Customer: " + order.CustomerName);
-            Console.WriteLine("Product: " + product.ProductName);
-            Console.WriteLine("Price: $" + orderItem.Price);
-            Console.WriteLine("Quantity: " + orderItem.Quantity);
-            Console.WriteLine("Total: $" + total);
-
-            Console.WriteLine("Saving order to database...");
-            _orderRepository.Create(order);
-
-            return true;
-        }
-        else
-        {
-            Console.WriteLine("No products are currently available. Please check back again soon.");
+            Console.WriteLine("Can not get list of products. Please try again later.");
             return false;
         }
+
+        if (productsResult.Value.Count == 0)
+        {
+            Console.WriteLine("We don't have any products to serve. Please try again later.");
+            return false;
+        }
+
+        var products = productsResult.Value;
+        var productNames = products.Select(x => x.ProductName).ToList();
+
+        // Input customer name
+        Console.WriteLine("Enter customer name (required):");
+        string? customerName = Console.ReadLine();
+
+        while (string.IsNullOrWhiteSpace(customerName))
+        {
+            Console.WriteLine();
+            Console.WriteLine("Customer name is required.");
+            Console.WriteLine("Please input customer name again.");
+            Console.WriteLine("Enter customer name:");
+            customerName = Console.ReadLine();
+        }
+
+        // Input product name to order
+        var allProductNamesText = string.Join(", ", productNames);
+        string? productName = string.Empty;
+        ProductDto? product = null;
+        bool isFirstTime = true;
+
+        while (string.IsNullOrWhiteSpace(productName) || !productNames.Any(x => string.Equals(x, productName, StringComparison.OrdinalIgnoreCase)) || product == null)
+        {
+            Console.WriteLine();
+            if (!isFirstTime)
+            {
+                Console.WriteLine("Product name is not correct. Please try enter again.");
+            }
+
+            Console.WriteLine($"Enter product name (required and need to be one of these values [{allProductNamesText}]):");
+            productName = Console.ReadLine();
+            isFirstTime = false;
+            product = products.FirstOrDefault(x => string.Equals(x.ProductName, productName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Input quantity want to order
+        Console.WriteLine();
+        Console.WriteLine("Enter quantity (required and need to be a positive integer):");
+        var inputQuantityString = Console.ReadLine();
+        int quantity = 0;
+
+        while (string.IsNullOrWhiteSpace(inputQuantityString) || !int.TryParse(inputQuantityString, out quantity) || quantity <= 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Quantity is required and must be a positive integer.");
+            Console.WriteLine("Please input quantity again.");
+            Console.WriteLine("Enter quantity:");
+            inputQuantityString = Console.ReadLine();
+        }
+
+        // Process order
+        Console.WriteLine();
+        Console.WriteLine("Processing order...");
+
+        var orderItem = new SubmittedOrderItemDto();
+        orderItem.ProductId = product.Id;
+        orderItem.Quantity = quantity;
+
+        var submittedOrder = new SubmittedOrderDto { CustomerName = customerName, OrderItems = [orderItem] };
+
+        double total = orderItem.Quantity * product.Price;
+
+        Console.WriteLine("Order complete!");
+        Console.WriteLine("Customer: " + customerName);
+        Console.WriteLine("Product: " + product.ProductName);
+        Console.WriteLine("Price: $" + product.Price);
+        Console.WriteLine("Quantity: " + orderItem.Quantity);
+        Console.WriteLine("Total: $" + total);
+
+        Console.WriteLine("Saving order to database...");
+        var result = _orderService.SubmitOrder(submittedOrder).GetAwaiter().GetResult();
+        if (!result.IsSuccess)
+        {
+            Console.WriteLine("We have an error when submit order: " + result.ErrorMessage);
+            Console.WriteLine("Please try submit order again.");
+            return false;
+        }
+
+        return true;
     }
 }

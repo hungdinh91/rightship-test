@@ -1,30 +1,25 @@
-﻿// Data/ProductRepository.cs
+﻿using Microsoft.EntityFrameworkCore;
 using OrderService.Domain.Contracts.Repositories;
 using OrderService.Domain.Models;
 using OrderService.Infrastructure.DbContexts;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace OrderService.Infrastructure.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : Repository<Product>, IProductRepository
     {
-        private readonly OrderDbContext _dbContext;
-
-        public ProductRepository(OrderDbContext orderDbContext)
+        public ProductRepository(OrderDbContext context) : base(context)
         {
-            _dbContext = orderDbContext;
         }
 
-        public Product? GetProductByName(string? productName)
+        public async Task<List<Product>> GetByManyIdsAsync(IEnumerable<Guid> ids)
         {
-            return _dbContext.Products.FirstOrDefault(p => p.ProductName == productName);
+            if (ids == null || !ids.Any()) return new List<Product>();
+            return await _context.Products.Where(x => ids.Contains(x.Id)).ToListAsync();   
         }
 
-        public List<string> GetProductNames()
+        public async Task<List<Product>> GetProductsAsync()
         {
-            return _dbContext.Products.Select(x => x.ProductName).ToList();
+            return await _context.Products.ToListAsync();
         }
     }
 }

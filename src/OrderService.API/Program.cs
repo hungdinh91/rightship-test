@@ -1,6 +1,11 @@
-
 using Microsoft.EntityFrameworkCore;
+using OrderService.API.Middlewares;
+using OrderService.Domain.Contracts;
+using OrderService.Domain.Contracts.Repositories;
+using OrderService.Infrastructure.Cache;
 using OrderService.Infrastructure.DbContexts;
+using OrderService.Infrastructure.Repositories;
+using StackExchange.Redis;
 
 namespace OrderService.API
 {
@@ -16,6 +21,15 @@ namespace OrderService.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDb"));
             });
 
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? throw new NotSupportedException("Redis has not been configured");
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
+
+            builder.Services.AddSingleton<IRedisCache, RedisCache>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -24,14 +38,14 @@ namespace OrderService.API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            //if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
-
+            app.UseMiddleware<GlobalExceptionHandling>();
             app.UseAuthorization();
 
             // Migrate the database

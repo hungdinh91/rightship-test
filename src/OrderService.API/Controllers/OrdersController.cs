@@ -1,4 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Application.Commands;
+using OrderService.SharedKernel.Common;
 
 namespace OrderService.API.Controllers
 {
@@ -6,17 +9,29 @@ namespace OrderService.API.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
+        private readonly IMediator _mediator;
         private readonly ILogger<OrdersController> _logger;
 
-        public OrdersController(ILogger<OrdersController> logger)
+        public OrdersController(IMediator mediator, ILogger<OrdersController> logger)
         {
+            _mediator = mediator;
             _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SubmitOrder([FromBody] SubmittedOrderDto dto)
         {
-            return Ok();
+            var result = await _mediator.Send(new SubmitOrderCommand(dto));
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+
+            return BadRequest(new
+            {
+                result.ErrorCode,
+                result.ErrorMessage
+            });
         }
     }
 }
