@@ -34,8 +34,8 @@ services:
     image: ${DOCKER_REGISTRY-}orderserviceapi
     container_name: "orderapi"
     build:
-      context: .
-      dockerfile: src/OrderService.API/Dockerfile
+      context: src/backend
+      dockerfile: order-service/OrderService.API/Dockerfile
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -46,6 +46,25 @@ services:
         condition: service_healthy
     environment:
       - ConnectionStrings__OrderDb=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Password@123;Encrypt=false;
+      - ConnectionStrings__Redis=redis
+      - ConnectionStrings__ProductApiHost=productapi
+
+  productservice.api:
+    image: ${DOCKER_REGISTRY-}productserviceapi
+    container_name: "productapi"
+    build:
+      context: .
+      dockerfile: src/backend/product-service/ProductService.API/Dockerfile
+    ports:
+      - "8060:8080"
+      - "8061:8081"
+    networks:
+      - backend
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__ProductDb=Server=sqlserver;Database=ProductDb;User Id=sa;Password=Password@123;Encrypt=false;
       - ConnectionStrings__Redis=redis
 
 networks:

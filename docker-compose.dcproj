@@ -4,7 +4,7 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <DockerPublishLocally>False</DockerPublishLocally>
-    <ProjectGuid>708c803a-ae77-434a-9ff6-5a00c79795f1</ProjectGuid>
+    <ProjectGuid>327b2f2b-32bf-40b9-99ab-3b926ec327c5</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>orderservice.api</DockerServiceName>
