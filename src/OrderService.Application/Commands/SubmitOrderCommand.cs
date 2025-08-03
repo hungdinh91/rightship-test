@@ -35,7 +35,7 @@ public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Res
 
         if (notExistProductIds.Any())
         {
-            var joinedIdString = string.Join(", ", notExistProductIds);
+            var joinedIdString = string.Join(", ", notExistProductIds.Select(x => x.ToString()).OrderBy(x => x).ToList());
             return Result.Fail<OrderDto>(ErrorCode.ProductDoesNotExist, joinedIdString);
         }
 

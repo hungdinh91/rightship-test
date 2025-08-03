@@ -56,12 +56,12 @@ public class Result
         return new Result<T>(false, errorCode, null, msgParams);
     }
 
-    public static Result Fail(ErrorCode errorCode, string errorMessage)
+    public static Result FailWithMessage(ErrorCode errorCode, string errorMessage)
     {
         return new Result(false, errorCode, errorMessage);
     }
 
-    public static Result<T> Fail<T>(ErrorCode errorCode, string errorMessage)
+    public static Result<T> FailWithMessage<T>(ErrorCode errorCode, string errorMessage)
     {
         return new Result<T>(false, errorCode, errorMessage);
     }

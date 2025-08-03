@@ -60,7 +60,7 @@ public class HttpClientService : IHttpClientService
         {
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                return Result.Fail<T>(ErrorCode.ItemNotFound, "Item not found");
+                return Result.FailWithMessage<T>(ErrorCode.ItemNotFound, "Item not found");
             }
 
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
@@ -70,7 +70,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -104,7 +104,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -145,7 +145,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -179,7 +179,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -220,7 +220,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -254,7 +254,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
@@ -295,7 +295,7 @@ public class HttpClientService : IHttpClientService
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
-            return Result.Fail<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
+            return Result.FailWithMessage<T>((ErrorCode)errorData.ErrorCode, errorData.ErrorMessage);
         }
     }
 
