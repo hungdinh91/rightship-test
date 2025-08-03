@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using OrderService.SharedKernel.Common;
 using OrderService.SharedKernel.Extensions;
+using Serilog;
 using System.Net.Http.Json;
 
 namespace OrderService.ConsoleApp.Helpers;
@@ -20,12 +21,10 @@ public interface IHttpClientService
 public class HttpClientService : IHttpClientService
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly ILogger<HttpClientService> _logger;
 
-    public HttpClientService(IHttpClientFactory clientFactory, ILogger<HttpClientService> logger)
+    public HttpClientService(IHttpClientFactory clientFactory)
     {
         _clientFactory = clientFactory;
-        _logger = logger;
     }
 
     public async Task<Result<T>> GetAsync<T>(string clientName, string endpoint)
@@ -40,7 +39,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -50,7 +49,7 @@ public class HttpClientService : IHttpClientService
             var resultData = GetResult<T>(jsonContent, apiUrlLog);
             if (resultData == null)
             {
-                _logger.LogError($"Fail to get data from API {apiUrlLog}");
+                Log.Error($"Fail to get data from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -66,7 +65,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -86,7 +85,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -100,7 +99,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -120,7 +119,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -130,7 +129,7 @@ public class HttpClientService : IHttpClientService
             var resultData = GetResult<T>(jsonContent, apiUrlLog);
             if (resultData == null)
             {
-                _logger.LogError($"Fail to get data from API {apiUrlLog}");
+                Log.Error($"Fail to get data from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -141,7 +140,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -161,7 +160,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -175,7 +174,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -195,7 +194,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -205,7 +204,7 @@ public class HttpClientService : IHttpClientService
             var resultData = GetResult<T>(jsonContent, apiUrlLog);
             if (resultData == null)
             {
-                _logger.LogError($"Fail to get data from API {apiUrlLog}");
+                Log.Error($"Fail to get data from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -216,7 +215,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -236,7 +235,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -250,7 +249,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -270,7 +269,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to connect API {apiUrlLog}");
+            Log.Error(ex, $"Fail to connect API {apiUrlLog}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
 
@@ -280,7 +279,7 @@ public class HttpClientService : IHttpClientService
             var resultData = GetResult<T>(jsonContent, apiUrlLog);
             if (resultData == null)
             {
-                _logger.LogError($"Fail to get data from API {apiUrlLog}");
+                Log.Error($"Fail to get data from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -291,7 +290,7 @@ public class HttpClientService : IHttpClientService
             var errorData = GetResult<ErrorObject>(jsonContent, apiUrlLog);
             if (errorData == null)
             {
-                _logger.LogError($"Fail to get error from API {apiUrlLog}");
+                Log.Error($"Fail to get error from API {apiUrlLog}");
                 throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
             }
 
@@ -307,7 +306,7 @@ public class HttpClientService : IHttpClientService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Fail to deserialize api response body of API {apiUrl}");
+            Log.Error(ex, $"Fail to deserialize api response body of API {apiUrl}");
             throw new Exception(ErrorCode.ApiConnectionError.GetDescription());
         }
     }

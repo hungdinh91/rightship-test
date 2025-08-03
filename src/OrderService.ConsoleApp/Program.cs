@@ -7,6 +7,7 @@ using Polly.Extensions.Http;
 using Polly;
 using OrderService.ConsoleApp.Helpers;
 using OrderService.ConsoleApp.Services;
+using Serilog;
 
 namespace OrderService.ConsoleApp
 {
@@ -52,9 +53,25 @@ namespace OrderService.ConsoleApp
         {
             var host = CreateHostBuilder().Build();
 
-            var orderConsole = host.Services.GetRequiredService<OrderConsole>();
-            orderConsole.Start();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                //.WriteTo.Console()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
+            Log.Information("Application Starting Up");
+
+            var orderConsole = host.Services.GetRequiredService<OrderConsole>();
+            try
+            {
+                orderConsole.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Log.CloseAndFlush();
             Console.WriteLine("Done.");
         }
     }
