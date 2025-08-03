@@ -41,13 +41,15 @@ services:
       - "8081:8081"
     networks:
       - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       sqlserver:
         condition: service_healthy
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__OrderDb=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Password@123;Encrypt=false;
       - ConnectionStrings__Redis=redis
-      - ConnectionStrings__ProductApiHost=productapi
 
   productservice.api:
     image: ${DOCKER_REGISTRY-}productserviceapi
@@ -60,10 +62,13 @@ services:
       - "8061:8081"
     networks:
       - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       sqlserver:
         condition: service_healthy
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__ProductDb=Server=sqlserver;Database=ProductDb;User Id=sa;Password=Password@123;Encrypt=false;
       - ConnectionStrings__Redis=redis
 

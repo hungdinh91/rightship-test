@@ -65,10 +65,19 @@ namespace OrderService.API
             builder.Services.AddHttpClient($"ProductServiceClient", client =>
             {
                 var apiHost = builder.Configuration.GetConnectionString("ProductApiHost") ?? throw new NotSupportedException();
+                Console.WriteLine(apiHost);
                 client.BaseAddress = new Uri(apiHost);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 // Add other headers if needed, like auth tokens
-            }).AddPolicyHandler(RetryPolicy.GetPolicy());
+            }).AddPolicyHandler(RetryPolicy.GetPolicy())
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+            });
 
             builder.Services.AddSingleton<IRedisCache, RedisCache>();
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
