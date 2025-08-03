@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using OrderService.API.Middlewares;
 using OrderService.Domain.Contracts;
 using OrderService.Domain.Contracts.Repositories;
@@ -30,6 +31,16 @@ namespace OrderService.API
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
 
+            // Add Application Insights logging
+            builder.Logging.AddApplicationInsights(
+                configureTelemetryConfiguration: (config) =>
+                    config.ConnectionString = builder.Configuration.GetConnectionString("ApplicationInsights"),
+                configureApplicationInsightsLoggerOptions: (options) => { }
+            );
+
+            // Optional: Set log level filter
+            builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("OrderService", LogLevel.Debug);
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +49,7 @@ namespace OrderService.API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
